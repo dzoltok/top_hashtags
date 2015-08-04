@@ -6,10 +6,16 @@ Example: <%= link_to "User @davezoltok's top 10 hashtags over their last 100 twe
 
 <h3>How it works</h3>
 
-<p>The demo uses a combination of Twitter's public API and local database storage to minimize the number of external calls that need to be made.</p>
+<p>The demo uses a combination of Twitter's public API and local database storage to try and minimize the number of external calls that need to be made.</p>
 
-<p>First, the algorithm queries the user's timeline and retrieves a set of up to 200 tweets (the maximum allowed in a single search result). It then scans through these results, keeping track of which hashtags are used and how often. This process is repeated for each page of results (using <%= link_to 'max_id and since_id', 'https://dev.twitter.com/rest/public/timelines', target: '_blank' %> to ensure that only unprocessed tweets are returned, and each tweet is only received once).</p>
+<p>To minimize redundant calls and processing, Twitter <%= link_to 'recommends', 'https://dev.twitter.com/rest/public/timelines', target: '_blank' %> using two parameters when calling their user timeline API: max_id and since_id. But the use of since_id assumes that all tweets previous to that tweet have already been processed. Depending on how a user manipulates the limit parameter, this may not be the case.</p>
 
-<p>As each tweet is processed, its Twitter handle, ID, and hashtags are stored locally in the database. These tweets are then explicity not returned by the Twitter API, to reduce the potential size of API calls.</p>
+<p>So, in order to minimize the long term number of calls, a user's entire timeline (or their last 2000 tweets) is pre-processed into the local database when their handle is passed into this API for the first time. This ensures that the since_id parameter can be used correctly on any subsequent calls.</p>
 
-<p>Once all results from the Twitter API have been processed, if the limit of tweets to process has not yet been reached, the system retrieves a set of already-processed results from the database and scans them the same way. </p>
+<p>The algorithm queries the user's timeline and retrieves a set of up to 200 tweets (the maximum allowed in a single search result). It then scans through these results, keeping track of which hashtags are used and how often. This process is repeated for each page of results.</p>
+
+<p>As each tweet is processed, its Twitter handle, ID, and hashtags are stored locally in the database. Due to the use of the parameters mentioned above, no tweet is ever processed more than once, or returned in more than one call to the Twitter API.</p>
+
+<p>Once all results from the Twitter API have been processed, if the limit of tweets to process has not yet been reached, the system retrieves a set of already-processed results from the database and scans them the same way. The results from analyzing the new tweets from the Twitter API are used as the initial data for the old tweets pulled from the database.</p>
+
+<p>Finally, the resulting data is sorted and truncated to the top 10 results, then re-formatted into a JSON array.</p>
