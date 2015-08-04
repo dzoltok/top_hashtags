@@ -51,6 +51,9 @@ group :development, :test do
 
   # Read environment variables from the .env file in the project root
   gem 'dotenv-rails'
+
+  # Use RSpec for unit and functional testing
+  gem 'rspec-rails'
 end
 
 group :production do

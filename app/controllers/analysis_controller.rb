@@ -1,10 +1,30 @@
 require 'twitter_api'
 
 class AnalysisController < ApplicationController
+  rescue_from Twitter::Error::NotFound, :with => :no_such_user
+
   # Given a handle and limit, return a JSON response that contains the 10 most frequently used hashtags by that user in their last <limit> tweets
   def index
-    handle = params[:handle]
-    limit = (params[:limit] || 2000).to_i
+    # Parameter checking the hard way: handle is required, limit is optional but must be a non-negative integer
+    if params.has_key? :handle
+      handle = params[:handle]
+    else
+      render json: { error: 'Handle required.' }, status: 500 and return
+    end
+
+    if params.has_key?(:limit)
+      if params[:limit].to_i.to_s != params[:limit]
+        render json: { error: 'Limit must be an integer.' }, status: 500 and return
+      elsif params[:limit].to_i < 0
+        render json: { error: 'Limit must be non-negative.' }, status: 500 and return
+      elsif params[:limit].to_i > 2000
+        render json: { error: 'Limit must be less than 2000.' }, status: 500 and return
+      end
+      limit = params[:limit].to_i
+    else
+      limit = 2000
+    end
+
     hashtags = Hash.new(0)
 
     # Note that since_id only works if ALL tweets prior to since_id have already been processed. If the user makes a request with a small
@@ -92,4 +112,9 @@ class AnalysisController < ApplicationController
     end
     return hashtags
   end
+
+  def no_such_user(error)
+    render json: { error: error.message }, status: 500
+  end
+
 end

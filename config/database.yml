@@ -24,3 +24,7 @@ default: &default
 development:
   <<: *default
   database: "top_hashtags_development"
+
+test:
+  <<: *default
+  database: "top_hashtags_test"
