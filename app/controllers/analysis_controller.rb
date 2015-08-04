@@ -75,9 +75,10 @@ class AnalysisController < ApplicationController
     Rails.logger.info "#{db_tweets_processed} tweets processed from the database"
 
     # NOW we can safely save the processed tweets
-    new_tweet_records.each do |new_tweet_record|
-      new_tweet_record.save!
-    end
+    TweetRecord.import new_tweet_records
+    # new_tweet_records.each do |new_tweet_record|
+    #   new_tweet_record.save!
+    # end
 
     # Sort the resulting hashtags by descending count value, grab the first 10 elements, and return them as a new Hash
     render json: hashtags.sort_by { |h, v| -v }[0..9].to_h

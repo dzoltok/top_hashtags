@@ -36,6 +36,9 @@ gem 'puma'
 # Use the Twitter gem to interface with the API
 gem 'twitter'
 
+# Enhance ability to insert multiple records at once through ActiveRecord
+gem 'activerecord-import'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
