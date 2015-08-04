@@ -17,13 +17,12 @@ class AnalysisController < ApplicationController
 
     # We can then use that since_id to only grab new tweets from the API
     results = process_from_twitter(handle, limit, since_id)
-    Rails.logger.info results
 
     # If we still haven't processed enough tweets to hit the limit, check the DB
     hashtags = process_from_database(results[:hashtags], handle, limit - results[:processed], results[:maximum_id]) if results[:processed] < limit
 
-    # Sort the resulting hashtags by descending count value, grab the first 10 elements, and return them as a new Hash
-    render json: hashtags.sort_by { |h, v| -v }[0..9].to_h
+    # Sort the resulting hashtags by descending count value, grab the first 10 elements, and return them as a new array of Hashes
+    render json: hashtags.sort_by { |h, v| -v }[0..9].map{ |item| { hashtag: item[0], count: item[1] }}
   end
 
   private
