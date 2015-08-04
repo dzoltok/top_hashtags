@@ -1,4 +1,15 @@
-<h2>Hello World</h2>
-<p>
-  The time is now: <%= Time.now %>
-</p>
+<h2>Top Hashtags</h2>
+
+<p>This is a tech demo that returns the top 10 hashtags a given Twitter handle has used over their last X tweets, in JSON format.</p>
+
+Example: <%= link_to "User @davezoltok's top 10 hashtags over their last 100 tweets", analysis_index_path(handle: 'davezoltok', limit: 100) %>
+
+<h3>How it works</h3>
+
+<p>The demo uses a combination of Twitter's public API and local database storage to minimize the number of external calls that need to be made.</p>
+
+<p>First, the algorithm queries the user's timeline and retrieves a set of up to 200 tweets (the maximum allowed in a single search result). It then scans through these results, keeping track of which hashtags are used and how often. This process is repeated for each page of results (using <%= link_to 'max_id and since_id', 'https://dev.twitter.com/rest/public/timelines', target: '_blank' %> to ensure that only unprocessed tweets are returned, and each tweet is only received once).</p>
+
+<p>As each tweet is processed, its Twitter handle, ID, and hashtags are stored locally in the database. These tweets are then explicity not returned by the Twitter API, to reduce the potential size of API calls.</p>
+
+<p>Once all results from the Twitter API have been processed, if the limit of tweets to process has not yet been reached, the system retrieves a set of already-processed results from the database and scans them the same way. </p>
