@@ -19,3 +19,5 @@ Example: <%= link_to "User @davezoltok's top 10 hashtags over their last 100 twe
 <p>Once all results from the Twitter API have been processed, if the limit of tweets to process has not yet been reached, the system retrieves a set of already-processed results from the database and scans them the same way. The results from analyzing the new tweets from the Twitter API are used as the initial data for the old tweets pulled from the database.</p>
 
 <p>Finally, the resulting data is sorted and truncated to the top 10 results, then re-formatted into a JSON array.</p>
+
+<p>To deploy this project on your own machine, simply clone the project and run 'bundle install' and 'rake db:setup'. You'll need two environment variables, TWITTER_API_KEY and TWITTER_API_SECRET.</p>
